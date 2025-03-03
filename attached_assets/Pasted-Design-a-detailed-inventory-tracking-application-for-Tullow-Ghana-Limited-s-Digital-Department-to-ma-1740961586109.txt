@@ -1,0 +1,85 @@
+Design a detailed inventory tracking application for Tullow Ghana Limited’s Digital Department to manage equipment issuance and improve accountability. Use the following specifications:
+
+Initial Inventory Data:
+
+Initialize the system with this inventory (from the 'Filtered Inventory Report - Accra Sheet Only'):
+
+Dell Monitors: 3 (sub-items: Dell 24” Monitors: 0, Dell 32” Monitors: 3, Dell 30” Monitors: 0)
+Laptops: 39 (sub-items: Dell Laptops: 30, London Laptops: 9)
+Dell Type C Chargers: 54
+Dell Quietkey Keyboard: 39
+Dell USB Optical Mouse: 47
+Docking Stations: 69
+Hardrives: 3
+Pendrives: 16
+HDMI: 7
+iPhone Cases: 36 (sub-items: iPhone 12 Cases: 25, iPhone 13/14 Cases: 10, iPhone XR Cases: 1)
+Screen Protectors: 136 (sub-items: iPhone 12/11 SP: 62, iPhone 13 SP: 73, iPhone XR SP: 1)
+iPhone Chargers: 36
+iPhone Cables: 26
+iPhones: 29 (sub-items: iPhone 12: 0, iPhone 13: 29)
+Logitech Headset: 19
+Laptop Bags: 22
+Each item has a 'Count' field representing the last known quantity, which the system will update as items are issued or returned.
+Core Features:
+
+Issuance Logging:
+When issuing an item, log:
+Issuer: Defaults to the logged-in user (selected from a dropdown of names).
+Authorized By: Name of the person who permitted the issuance (dropdown selection).
+Item: Selected from the inventory list (e.g., 'Dell USB Optical Mouse').
+Quantity: Number of items issued (supports bulk logging, e.g., 3 mice at once).
+Status: Dropdown with 'Permanent' or 'Temporary'.
+If Permanent: Log issuance date (defaults to now, editable for retroactive entries).
+If Temporary: Log issuance date (defaults to now, editable) and expected return date (user-specified).
+Issuer’s Department: Defaults to 'Digital', with a dropdown for other departments.
+Recipient’s Department: Dropdown or text field for the recipient’s department.
+Update the item’s 'Count' by deducting the issued quantity (e.g., 47 mice become 46 after issuing 1).
+Allow returns: Log the return date, add the quantity back to 'Count', and mark the entry as 'Returned'.
+Name and Department Management:
+Maintain a repository of names (for Issuer and Authorized By) and departments.
+Include an 'Add' button to input new names and their departments.
+Provide options to Modify (e.g., change a name’s department), Delete (remove a name), or Update (refresh details) within a settings or admin section.
+Populate dropdowns dynamically from this repository.
+Error Handling for Manual Updates:
+Allow manual updates to an item’s 'Count' (e.g., after a physical count).
+If the new count differs from the system’s expected count (based on logs), display an error:
+Example: 'Inconsistency detected: Log shows 35 Docking Stations, entered count is 34. Verify your count or review the log.'
+Options:
+'Verify Count': Recount and re-enter.
+'Review Log': Display recent issuances/returns for that item.
+'Hard Update': Proceed with the new count, requiring a reason (e.g., 'Unlogged issuance').
+Filtering and Search:
+Filter logs by:
+Date range (e.g., issuances from March 1-7, 2025).
+Issuer (e.g., all items issued by 'John Doe').
+Authorized By (e.g., all items approved by 'Jane Smith').
+Recipient Department (e.g., all items sent to 'Marketing').
+Display results in a table with columns: Item, Quantity, Issuer, Authorized By, Status, Dates, Departments.
+Automated Reminders:
+For temporary issuances, send a notification (e.g., email or in-app alert) to the issuer and recipient:
+1 day before the expected return date.
+If overdue, daily until returned or updated.
+Audit Trails:
+Log every change (issuance, return, manual count update) with:
+Who made the change (logged-in user).
+When (timestamp, e.g., 'March 2, 2025, 14:30').
+What changed (e.g., 'Docking Stations updated from 35 to 34, Reason: Miscount corrected').
+Viewable in a separate 'Audit Log' tab.
+Pattern-Based Auditing Dashboard:
+Include a dashboard tab with:
+Item Frequency: Bar chart of most-issued items (e.g., 'Docking Stations: 15 issuances this month').
+Average Borrow Duration: For temporary items (e.g., 'Mice: 3 days avg.').
+Discrepancy Rate: Number of times manual counts mismatched logs (e.g., 'Docking Stations: 2 discrepancies in 6 months').
+Overdue Items: Table of items past due (e.g., 'Mouse, due March 1, 2025, 2 days late').
+Use basic stats (e.g., averages, counts) to highlight trends and suggest audit focus areas (e.g., 'High discrepancy in Docking Stations—audit recommended').
+User Interface:
+
+Clean, intuitive design with tabs: 'Inventory' (current counts), 'Issue/Return' (logging), 'Logs' (history), 'Dashboard' (stats), 'Settings' (name/department management).
+Dropdowns for names, items, and departments.
+Buttons for 'Add', 'Modify', 'Delete', 'Update' in Settings.
+Current date for defaults: March 2, 2025 (adjustable by user).
+Notes:
+
+Assume verbal approval happens offline; no in-app approval workflow.
+Prioritize usability for a small team with varying permissions (e.g., National Service Personnel issuing, contract individuals authorizing)."
