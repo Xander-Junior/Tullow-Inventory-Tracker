@@ -9,21 +9,24 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Item operations
   getItems(): Promise<Item[]>;
   getItem(id: number): Promise<Item | undefined>;
+  createItem(item: InsertItem): Promise<Item>;
+  updateItem(id: number, item: InsertItem): Promise<Item>;
+  deleteItem(id: number): Promise<void>;
   updateItemCount(id: number, count: number): Promise<Item>;
-  
+
   // Issuance operations
   createIssuance(issuance: InsertIssuance): Promise<Issuance>;
   getIssuances(): Promise<Issuance[]>;
   updateIssuance(id: number, returnedDate: Date): Promise<Issuance>;
-  
+
   // Audit operations
   createAudit(audit: InsertAudit): Promise<Audit>;
   getAudits(): Promise<Audit[]>;
-  
+
   // Session store
   sessionStore: session.Store;
 }
@@ -94,7 +97,8 @@ export class MemStorage implements IStorage {
       this.items.set(id, {
         ...item,
         id,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
+        image: { }
       });
     });
   }
@@ -126,10 +130,40 @@ export class MemStorage implements IStorage {
     return this.items.get(id);
   }
 
+  async createItem(insertItem: InsertItem): Promise<Item> {
+    const id = this.currentId++;
+    const item: Item = {
+      ...insertItem,
+      id,
+      lastUpdated: new Date(),
+      image: insertItem.image || { }
+    };
+    this.items.set(id, item);
+    return item;
+  }
+
+  async updateItem(id: number, insertItem: InsertItem): Promise<Item> {
+    const item = this.items.get(id);
+    if (!item) throw new Error("Item not found");
+
+    const updatedItem: Item = {
+      ...item,
+      ...insertItem,
+      id,
+      lastUpdated: new Date()
+    };
+    this.items.set(id, updatedItem);
+    return updatedItem;
+  }
+
+  async deleteItem(id: number): Promise<void> {
+    this.items.delete(id);
+  }
+
   async updateItemCount(id: number, count: number): Promise<Item> {
     const item = this.items.get(id);
     if (!item) throw new Error("Item not found");
-    
+
     const updatedItem = { ...item, count, lastUpdated: new Date() };
     this.items.set(id, updatedItem);
     return updatedItem;
@@ -150,7 +184,7 @@ export class MemStorage implements IStorage {
   async updateIssuance(id: number, returnedDate: Date): Promise<Issuance> {
     const issuance = this.issuances.get(id);
     if (!issuance) throw new Error("Issuance not found");
-    
+
     const updatedIssuance = { ...issuance, returnedDate };
     this.issuances.set(id, updatedIssuance);
     return updatedIssuance;

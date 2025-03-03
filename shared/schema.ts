@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -28,6 +28,7 @@ export const items = pgTable("items", {
   subCategory: text("subCategory"),
   count: integer("count").notNull(),
   lastUpdated: timestamp("lastUpdated").notNull(),
+  image: jsonb("image"),
 });
 
 export const insertItemSchema = createInsertSchema(items).pick({
@@ -35,6 +36,7 @@ export const insertItemSchema = createInsertSchema(items).pick({
   category: true,
   subCategory: true,
   count: true,
+  image: true,
 });
 
 export type InsertItem = z.infer<typeof insertItemSchema>;
