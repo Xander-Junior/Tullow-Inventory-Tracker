@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Issuance, Item, User } from "@shared/schema";
+import { Link, useLocation } from "wouter";
 import {
   Table,
   TableBody,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Eye, Undo, Redo } from "lucide-react";
+import { ArrowLeft, ChartBar, Eye, Undo, Redo } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,6 +35,7 @@ export default function IssuanceLogs() {
   const [selectedIssuance, setSelectedIssuance] = useState<Issuance | null>(null);
   const [showUndoAlert, setShowUndoAlert] = useState(false);
   const [showRedoAlert, setShowRedoAlert] = useState(false);
+  const [, setLocation] = useLocation();
 
   const { data: issuances } = useQuery<Issuance[]>({
     queryKey: ["/api/issuances"],
@@ -63,10 +65,25 @@ export default function IssuanceLogs() {
     setShowRedoAlert(true);
   }
 
+  function goToAnalytics() {
+    setLocation('/?tab=analytics');
+  }
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Issuance Logs</h1>
+        <div className="flex items-center gap-4">
+          <Link href="/">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </Link>
+          <Button variant="outline" size="sm" onClick={goToAnalytics}>
+            <ChartBar className="h-4 w-4 mr-2" />
+            Analytics
+          </Button>
+        </div>
         <div className="space-x-2">
           <Button onClick={handleUndo} variant="outline" size="sm">
             <Undo className="h-4 w-4 mr-2" />
@@ -78,6 +95,8 @@ export default function IssuanceLogs() {
           </Button>
         </div>
       </div>
+
+      <h1 className="text-2xl font-bold mb-6">Issuance Logs</h1>
 
       <Table>
         <TableHeader>

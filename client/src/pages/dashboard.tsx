@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import InventoryTable from "@/components/inventory-table";
 import IssueForm from "@/components/issue-form";
 import StatsCards from "@/components/stats-cards";
@@ -10,6 +10,9 @@ import { ClipboardList } from "lucide-react";
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
+  const [search] = useSearch();
+  const params = new URLSearchParams(search);
+  const defaultTab = params.get('tab') || 'inventory';
 
   return (
     <div className="min-h-screen">
@@ -42,7 +45,7 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="inventory">
+        <Tabs defaultValue={defaultTab}>
           <TabsList className="mb-8">
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="issue">Issue/Return</TabsTrigger>
