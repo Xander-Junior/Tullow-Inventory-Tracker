@@ -139,7 +139,7 @@ export default function StatsCards() {
           <ScrollArea className="h-[200px]">
             <div className="space-y-4">
               {overdueItems?.map(issuance => {
-                const item = items?.find(i => i.itemId === issuance.itemId);
+                const item = items?.find(i => i.id === issuance.itemId);
                 const daysOverdue = Math.floor(
                   (new Date().getTime() - new Date(issuance.returnDate!).getTime()) /
                   (1000 * 60 * 60 * 24)
