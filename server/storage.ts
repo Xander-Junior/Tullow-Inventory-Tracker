@@ -52,10 +52,41 @@ export class MemStorage implements IStorage {
 
   private initializeInventory() {
     const defaultItems: InsertItem[] = [
+      // Monitors
       { name: "Dell 32\" Monitor", category: "Monitors", subCategory: "Dell 32\" Monitors", count: 3 },
+      { name: "Dell 24\" Monitor", category: "Monitors", subCategory: "Dell 24\" Monitors", count: 0 },
+      { name: "Dell 30\" Monitor", category: "Monitors", subCategory: "Dell 30\" Monitors", count: 0 },
+
+      // Laptops
       { name: "Dell Laptop", category: "Laptops", subCategory: "Dell Laptops", count: 30 },
       { name: "London Laptop", category: "Laptops", subCategory: "London Laptops", count: 9 },
-      // Add all other items from the spec...
+
+      // Accessories
+      { name: "Dell Type C Charger", category: "Accessories", subCategory: "Chargers", count: 54 },
+      { name: "Dell Quietkey Keyboard", category: "Accessories", subCategory: "Keyboards", count: 39 },
+      { name: "Dell USB Optical Mouse", category: "Accessories", subCategory: "Mice", count: 47 },
+      { name: "Docking Station", category: "Accessories", subCategory: "Docks", count: 69 },
+      { name: "Hardrive", category: "Accessories", subCategory: "Storage", count: 3 },
+      { name: "Pendrive", category: "Accessories", subCategory: "Storage", count: 16 },
+      { name: "HDMI Cable", category: "Accessories", subCategory: "Cables", count: 7 },
+
+      // iPhone Accessories
+      { name: "iPhone 12 Case", category: "iPhone Accessories", subCategory: "Cases", count: 25 },
+      { name: "iPhone 13/14 Case", category: "iPhone Accessories", subCategory: "Cases", count: 10 },
+      { name: "iPhone XR Case", category: "iPhone Accessories", subCategory: "Cases", count: 1 },
+      { name: "iPhone 12/11 Screen Protector", category: "iPhone Accessories", subCategory: "Screen Protectors", count: 62 },
+      { name: "iPhone 13 Screen Protector", category: "iPhone Accessories", subCategory: "Screen Protectors", count: 73 },
+      { name: "iPhone XR Screen Protector", category: "iPhone Accessories", subCategory: "Screen Protectors", count: 1 },
+      { name: "iPhone Charger", category: "iPhone Accessories", subCategory: "Chargers", count: 36 },
+      { name: "iPhone Cable", category: "iPhone Accessories", subCategory: "Cables", count: 26 },
+
+      // iPhones
+      { name: "iPhone 12", category: "iPhones", subCategory: null, count: 0 },
+      { name: "iPhone 13", category: "iPhones", subCategory: null, count: 29 },
+
+      // Other
+      { name: "Logitech Headset", category: "Accessories", subCategory: "Audio", count: 19 },
+      { name: "Laptop Bag", category: "Accessories", subCategory: "Bags", count: 22 },
     ];
 
     defaultItems.forEach(item => {
