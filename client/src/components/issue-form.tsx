@@ -8,13 +8,24 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
+import { format } from "date-fns";
 
 export default function IssueForm() {
   const { toast } = useToast();
-  
+  const { user } = useAuth();
+
   const form = useForm({
     resolver: zodResolver(insertIssuanceSchema),
+    defaultValues: {
+      issueDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      status: "Permanent",
+      recipientDepartment: "",
+      quantity: 1,
+    },
   });
+
+  const watchStatus = form.watch("status");
 
   const { data: items } = useQuery<Item[]>({
     queryKey: ["/api/items"],
@@ -79,7 +90,7 @@ export default function IssueForm() {
             <FormItem>
               <FormLabel>Quantity</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -135,13 +146,54 @@ export default function IssueForm() {
 
         <FormField
           control={form.control}
+          name="issueDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Issue Date</FormLabel>
+              <FormControl>
+                <Input type="datetime-local" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {watchStatus === "Temporary" && (
+          <FormField
+            control={form.control}
+            name="returnDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Expected Return Date</FormLabel>
+                <FormControl>
+                  <Input type="datetime-local" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        <FormField
+          control={form.control}
           name="recipientDepartment"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Recipient Department</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Digital">Digital</SelectItem>
+                  <SelectItem value="Marketing">Marketing</SelectItem>
+                  <SelectItem value="Finance">Finance</SelectItem>
+                  <SelectItem value="HR">HR</SelectItem>
+                  <SelectItem value="Operations">Operations</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

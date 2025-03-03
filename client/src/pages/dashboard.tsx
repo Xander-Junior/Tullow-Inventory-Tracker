@@ -1,10 +1,12 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "wouter";
 import InventoryTable from "@/components/inventory-table";
 import IssueForm from "@/components/issue-form";
 import StatsCards from "@/components/stats-cards";
 import { SiTidal } from "react-icons/si";
+import { ClipboardList } from "lucide-react";
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
@@ -18,6 +20,12 @@ export default function Dashboard() {
             <h1 className="text-xl font-bold">Tullow Ghana Inventory</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/logs">
+              <Button variant="outline" size="sm">
+                <ClipboardList className="h-4 w-4 mr-2" />
+                View Logs
+              </Button>
+            </Link>
             <span className="text-sm text-gray-600">
               {user?.username} ({user?.department})
             </span>
