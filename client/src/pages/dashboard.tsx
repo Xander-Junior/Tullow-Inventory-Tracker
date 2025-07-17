@@ -1,3 +1,8 @@
+// client/src/pages/dashboard.tsx
+// Dashboard page for authenticated users.
+// Provides tabbed navigation for inventory, issuance/return, and analytics.
+// Displays user info and logout option.
+
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,6 +13,13 @@ import StatsCards from "@/components/stats-cards";
 import { SiTidal } from "react-icons/si";
 import { ClipboardList } from "lucide-react";
 
+/**
+ * Dashboard component.
+ * Shows a header with user info and logout, and a tabbed interface for:
+ * - Inventory management
+ * - Equipment issuance/return
+ * - Analytics and stats
+ */
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
   const [search] = useSearch();
@@ -16,6 +28,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen">
+      {/* Header with app title, user info, and logout */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -44,6 +57,7 @@ export default function Dashboard() {
         </div>
       </header>
 
+      {/* Main content: tabbed interface */}
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue={defaultTab}>
           <TabsList className="mb-8">
@@ -52,14 +66,17 @@ export default function Dashboard() {
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
 
+          {/* Inventory tab: view and manage items */}
           <TabsContent value="inventory">
             <InventoryTable />
           </TabsContent>
 
+          {/* Issue/Return tab: issue or return equipment */}
           <TabsContent value="issue">
             <IssueForm />
           </TabsContent>
 
+          {/* Analytics tab: view stats and charts */}
           <TabsContent value="analytics">
             <StatsCards />
           </TabsContent>

@@ -1,3 +1,7 @@
+// client/src/pages/auth-page.tsx
+// Authentication page for login and registration.
+// Provides tabbed forms for user login and registration, with validation and feedback.
+
 import { useAuth } from "@/hooks/use-auth";
 import { Redirect } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +14,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SiTidal } from "react-icons/si";
 
+/**
+ * AuthPage component.
+ * Shows login and registration forms in tabs.
+ * Redirects to dashboard if already authenticated.
+ */
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
 
+  // Form for login
   const loginForm = useForm({
     resolver: zodResolver(insertUserSchema.pick({ username: true, password: true })),
     defaultValues: {
@@ -21,6 +31,7 @@ export default function AuthPage() {
     }
   });
 
+  // Form for registration
   const registerForm = useForm({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -30,12 +41,14 @@ export default function AuthPage() {
     }
   });
 
+  // Redirect to dashboard if already logged in
   if (user) {
     return <Redirect to="/" />;
   }
 
   return (
     <div className="min-h-screen grid md:grid-cols-2">
+      {/* Login/Register card */}
       <div className="flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader>
@@ -51,6 +64,7 @@ export default function AuthPage() {
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
 
+              {/* Login form */}
               <TabsContent value="login">
                 <Form {...loginForm}>
                   <form onSubmit={loginForm.handleSubmit(data => loginMutation.mutate(data))} className="space-y-4">
@@ -87,6 +101,7 @@ export default function AuthPage() {
                 </Form>
               </TabsContent>
 
+              {/* Registration form */}
               <TabsContent value="register">
                 <Form {...registerForm}>
                   <form onSubmit={registerForm.handleSubmit(data => registerMutation.mutate(data))} className="space-y-4">
@@ -140,6 +155,7 @@ export default function AuthPage() {
         </Card>
       </div>
 
+      {/* Welcome message and info */}
       <div className="hidden md:flex items-center justify-center bg-gray-100 p-8">
         <div className="max-w-md space-y-4">
           <h1 className="text-4xl font-bold">Digital Department Inventory</h1>

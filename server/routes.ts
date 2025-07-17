@@ -1,3 +1,7 @@
+// server/routes.ts
+// Defines all API endpoints for inventory, issuance, and audit operations.
+// All routes are protected by authentication middleware.
+
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
@@ -5,21 +9,37 @@ import { setupAuth } from "./auth";
 import { insertIssuanceSchema, insertAuditSchema, insertItemSchema } from "@shared/schema";
 import { z } from "zod";
 
+// Schema for updating item count
 const updateCountSchema = z.object({
   count: z.number().min(0),
   reason: z.string().optional(),
 });
 
+/**
+ * Registers all API routes and authentication to the Express app.
+ * @param app Express app instance
+ * @returns HTTP server instance
+ */
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
-  // Inventory routes
+  // --- Inventory Routes ---
+
+  /**
+   * GET /api/items
+   * Returns all inventory items. Requires authentication.
+   */
   app.get("/api/items", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const items = await storage.getItems();
     res.json(items);
   });
 
+  /**
+   * POST /api/items
+   * Creates a new inventory item. Requires authentication.
+   * Body: { name, category, subCategory, count, ... }
+   */
   app.post("/api/items", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const itemData = insertItemSchema.parse(req.body);
@@ -35,6 +55,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(201).json(item);
   });
 
+  /**
+   * PATCH /api/items/:id
+   * Updates an existing inventory item. Requires authentication.
+   * Body: { name, category, subCategory, count, ... }
+   */
   app.patch("/api/items/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const itemData = insertItemSchema.parse(req.body);
@@ -56,6 +81,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(item);
   });
 
+  /**
+   * DELETE /api/items/:id
+   * Deletes an inventory item. Requires authentication.
+   */
   app.delete("/api/items/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const item = await storage.getItem(parseInt(req.params.id));
@@ -76,6 +105,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendStatus(200);
   });
 
+  /**
+   * PATCH /api/items/:id/count
+   * Updates the count of an item, with optional reason for discrepancy. Requires authentication.
+   * Body: { count, reason? }
+   */
   app.patch("/api/items/:id/count", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 
@@ -100,7 +134,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(updatedItem);
   });
 
-  // Issuance routes
+  // --- Issuance Routes ---
+
+  /**
+   * POST /api/issuances
+   * Issues an item to a user. Requires authentication.
+   * Body: { itemId, quantity, recipientDepartment, ... }
+   */
   app.post("/api/issuances", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 
@@ -127,12 +167,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(201).json(issuance);
   });
 
+  /**
+   * GET /api/issuances
+   * Returns all issuance records. Requires authentication.
+   */
   app.get("/api/issuances", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const issuances = await storage.getIssuances();
     res.json(issuances);
   });
 
+  /**
+   * POST /api/issuances/:id/return
+   * Marks an issuance as returned. Requires authentication.
+   */
   app.post("/api/issuances/:id/return", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 
@@ -157,13 +205,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(issuance);
   });
 
-  // Audit routes
+  // --- Audit Routes ---
+
+  /**
+   * GET /api/audits
+   * Returns all audit logs. Requires authentication.
+   */
   app.get("/api/audits", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const audits = await storage.getAudits();
     res.json(audits);
   });
 
+  // Create and return the HTTP server
   const httpServer = createServer(app);
   return httpServer;
 }

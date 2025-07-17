@@ -1,3 +1,8 @@
+// server/storage.ts
+// Implements in-memory storage for users, items, issuances, and audits.
+// Provides all CRUD operations and session store for the app.
+// NOTE: Data is not persistent and will reset on server restart.
+
 import { User, Item, Issuance, Audit, InsertUser, InsertItem, InsertIssuance, InsertAudit } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -31,6 +36,10 @@ export interface IStorage {
   sessionStore: session.Store;
 }
 
+/**
+ * In-memory implementation of IStorage.
+ * Stores all data in JS Maps. Not persistent.
+ */
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private items: Map<number, Item>;
@@ -53,6 +62,9 @@ export class MemStorage implements IStorage {
     this.initializeInventory();
   }
 
+  /**
+   * Populates the inventory with default items on server start.
+   */
   private initializeInventory() {
     const defaultItems: InsertItem[] = [
       // Monitors
@@ -103,17 +115,27 @@ export class MemStorage implements IStorage {
     });
   }
 
-  // User operations
+  // --- User operations ---
+
+  /**
+   * Returns a user by ID.
+   */
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
 
+  /**
+   * Returns a user by username.
+   */
   async getUserByUsername(username: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
       (user) => user.username === username,
     );
   }
 
+  /**
+   * Creates a new user.
+   */
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId++;
     const user: User = { ...insertUser, id, role: "issuer" };
@@ -121,15 +143,25 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  // Item operations
+  // --- Item operations ---
+
+  /**
+   * Returns all items in inventory.
+   */
   async getItems(): Promise<Item[]> {
     return Array.from(this.items.values());
   }
 
+  /**
+   * Returns a single item by ID.
+   */
   async getItem(id: number): Promise<Item | undefined> {
     return this.items.get(id);
   }
 
+  /**
+   * Creates a new inventory item.
+   */
   async createItem(insertItem: InsertItem): Promise<Item> {
     const id = this.currentId++;
     const item: Item = {
@@ -142,6 +174,9 @@ export class MemStorage implements IStorage {
     return item;
   }
 
+  /**
+   * Updates an existing inventory item.
+   */
   async updateItem(id: number, insertItem: InsertItem): Promise<Item> {
     const item = this.items.get(id);
     if (!item) throw new Error("Item not found");
@@ -156,10 +191,16 @@ export class MemStorage implements IStorage {
     return updatedItem;
   }
 
+  /**
+   * Deletes an inventory item by ID.
+   */
   async deleteItem(id: number): Promise<void> {
     this.items.delete(id);
   }
 
+  /**
+   * Updates the count of an item.
+   */
   async updateItemCount(id: number, count: number): Promise<Item> {
     const item = this.items.get(id);
     if (!item) throw new Error("Item not found");
@@ -169,7 +210,11 @@ export class MemStorage implements IStorage {
     return updatedItem;
   }
 
-  // Issuance operations
+  // --- Issuance operations ---
+
+  /**
+   * Creates a new issuance record.
+   */
   async createIssuance(issuance: InsertIssuance): Promise<Issuance> {
     const id = this.currentId++;
     const newIssuance: Issuance = { ...issuance, id, returnedDate: null };
@@ -177,10 +222,16 @@ export class MemStorage implements IStorage {
     return newIssuance;
   }
 
+  /**
+   * Returns all issuance records.
+   */
   async getIssuances(): Promise<Issuance[]> {
     return Array.from(this.issuances.values());
   }
 
+  /**
+   * Updates an issuance as returned.
+   */
   async updateIssuance(id: number, returnedDate: Date): Promise<Issuance> {
     const issuance = this.issuances.get(id);
     if (!issuance) throw new Error("Issuance not found");
@@ -190,7 +241,11 @@ export class MemStorage implements IStorage {
     return updatedIssuance;
   }
 
-  // Audit operations
+  // --- Audit operations ---
+
+  /**
+   * Creates a new audit log entry.
+   */
   async createAudit(audit: InsertAudit): Promise<Audit> {
     const id = this.currentId++;
     const newAudit: Audit = { ...audit, id, timestamp: new Date() };
@@ -198,9 +253,13 @@ export class MemStorage implements IStorage {
     return newAudit;
   }
 
+  /**
+   * Returns all audit logs.
+   */
   async getAudits(): Promise<Audit[]> {
     return Array.from(this.audits.values());
   }
 }
 
+// Export a singleton instance of MemStorage
 export const storage = new MemStorage();
