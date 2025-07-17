@@ -49,7 +49,7 @@ async function comparePasswords(supplied: string, stored: string) {
  */
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET!, // Should be set in environment
+    secret: process.env.SESSION_SECRET || "dev-secret-change-in-production", // Fallback for development
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
